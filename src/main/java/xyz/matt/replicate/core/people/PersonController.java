@@ -9,12 +9,12 @@ import java.util.concurrent.ExecutionException;
 public class PersonController {
 
     private final PersonCassandraDao personCassandraDao;
-    private final PersonProducer personProducer;
+    private final PersonMessenger personMessenger;
 
     @Autowired
-    public PersonController(PersonCassandraDao personCassandraDao, PersonProducer personProducer) {
+    public PersonController(PersonCassandraDao personCassandraDao, PersonMessenger personMessenger) {
         this.personCassandraDao = personCassandraDao;
-        this.personProducer = personProducer;
+        this.personMessenger = personMessenger;
     }
 
     @RequestMapping(value = "/people/{personName}", method = RequestMethod.GET)
@@ -24,6 +24,6 @@ public class PersonController {
 
     @RequestMapping(value = "/people/{personName}", method = RequestMethod.PUT)
     public void putPerson(@PathVariable("personName") String personName, @RequestBody Person person) throws ExecutionException, InterruptedException {
-        personProducer.emitPerson(person);
+        personMessenger.emitPerson(person);
     }
 }

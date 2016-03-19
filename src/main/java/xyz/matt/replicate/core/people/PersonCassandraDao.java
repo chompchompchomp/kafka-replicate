@@ -6,8 +6,11 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.utils.UUIDs;
 import com.google.common.base.Preconditions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import xyz.matt.replicate.core.util.JsonUtil;
 
+@Repository
 public class PersonCassandraDao {
 
     static final String INSERT_PERSON_CQL = "INSERT INTO person (first_name, revision_id, json) VALUES (?, ?, ?)";
@@ -18,6 +21,7 @@ public class PersonCassandraDao {
 
     private final Session session;
 
+    @Autowired
     public PersonCassandraDao(Session session) {
         this.session = Preconditions.checkNotNull(session);
         insertPerson = session.prepare(INSERT_PERSON_CQL);
@@ -25,8 +29,11 @@ public class PersonCassandraDao {
     }
 
     public void upsertPerson(Person person) {
-        final Statement statement = insertPerson
-                .bind(person.getFirstName(), UUIDs.timeBased(), JsonUtil.toJsonNoException(person));
+        final Statement statement = insertPerson.bind(
+                person.getFirstName(),
+                UUIDs.timeBased(),
+                JsonUtil.toJsonNoException(person)
+        );
 
         session.execute(statement);
     }
@@ -34,7 +41,7 @@ public class PersonCassandraDao {
     public Person getPerson(String personName) {
         final Statement statement = selectPerson.bind(personName);
         final Row row = session.execute(statement).one();
-
-        return JsonUtil.createObjectFromJson(row.getString("json"), Person.class);
+        final Person person = JsonUtil.createObjectFromJson(row.getString("json"), Person.class);
+        return person;
     }
 }
