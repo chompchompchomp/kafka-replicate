@@ -27,6 +27,7 @@ public class PersonCassandraReplicatorWorker implements Runnable{
 
     @Override
     public void run() {
+        logger.info("Starting person-cassandra-replicator-worker");
         consumer.subscribe(ImmutableList.of("replicate"));
         while (keepRunning.get()) {
             ConsumerRecords<String, String> records = consumer.poll(100);
@@ -34,13 +35,14 @@ public class PersonCassandraReplicatorWorker implements Runnable{
                 final Person person = JsonUtil.createObjectFromJson(currentRecord.value(), Person.class);
                 logger.info("Attempting to write person to cassandra.");
                 personCassandraDao.upsertPerson(person);
-                logger.info("Success write person to cassandra.");
+                logger.info("Success write person to cassandra, person-first-name={}", person.getFirstName());
             }
             consumer.commitSync();
         }
     }
 
     public void stop() {
+        logger.info("Stopping person-cassandra-replicator-worker");
         keepRunning.getAndSet(false);
     }
 }

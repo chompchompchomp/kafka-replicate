@@ -27,6 +27,6 @@ public class PersonMessenger {
                 new ProducerRecord<>(topicName, person.getFirstName(), JsonUtil.toJsonNoException(person));
 
         RecordMetadata metaData = producer.send(producerRecord).get();
-        logger.info("successfully emitted a person, partion={}, offset={}", metaData.partition(), metaData.offset());
+        logger.info("successfully emitted a person, partition={}, offset={}, first-name={}", metaData.partition(), metaData.offset(), person.getFirstName());
     }
 }

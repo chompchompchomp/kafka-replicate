@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class PeopleSpringConfig {
-    private static final Logger log = LoggerFactory.getLogger(PeopleSpringConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(PeopleSpringConfig.class);
 
     @Bean
     public PersonConsumerFactory personConsumerFactory() {
@@ -29,7 +29,6 @@ public class PeopleSpringConfig {
 
     @Bean @Autowired
     public PersonMessenger personMessenger(Producer<String, String> personProducer) {
-        log.info("Creating personMessenger bean. XXXXXXXXXXXXXXXXXX");
         return new PersonMessenger("replicate", personProducer);
     }
 }
